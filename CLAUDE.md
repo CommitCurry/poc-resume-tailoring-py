@@ -5,16 +5,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Environment Management
 
 **Python Version Management:**
-- **pyenv**: Manages Python versions (installed via Homebrew)
-- **uv**: Fast Python package manager and virtual environment tool
+- **uv**: Modern Python package manager and environment tool
 
 **Setup:**
 ```bash
-# Create virtual environment
-uv venv .venv --python 3.13
-
-# Activate virtual environment
-source .venv/bin/activate
+# Create virtual environment and install dependencies
+uv sync
 
 # Install project with dev dependencies
 uv pip install -e ".[dev]"
@@ -22,39 +18,43 @@ uv pip install -e ".[dev]"
 
 ## Development Commands
 
-**Installation (legacy method):**
+**Installation:**
 ```bash
-pip install -e ".[dev]"
+uv sync
 ```
 
 **Running the application:**
 ```bash
-commitcurry                    # If installed binaries are in PATH
-python -m commitcurry.main     # Alternative method
+uv run commitcurry             # Recommended method
+uv run python -m commitcurry.main # Alternative method
 ```
 
 **Testing:**
 ```bash
-pytest                         # Run all tests with coverage
-pytest tests/test_main.py      # Run specific test file
-pytest -v                      # Verbose output
+uv run pytest                  # Run all tests with coverage
+uv run pytest tests/test_main.py # Run specific test file
+uv run pytest -v               # Verbose output
 ```
 
 **Code Quality:**
 ```bash
-ruff check .                   # Lint code
-ruff format .                  # Format code
-ruff check --fix .             # Auto-fix linting issues
-mypy src/                      # Type checking
+uv run ruff check .            # Lint code
+uv run ruff format .           # Format code
+uv run ruff check --fix .      # Auto-fix linting issues
+uv run mypy src/               # Type checking
 ```
 
 **Environment Commands:**
 ```bash
-uv venv .venv                  # Create new virtual environment
-source .venv/bin/activate      # Activate virtual environment
-deactivate                     # Deactivate virtual environment
-uv pip list                    # List installed packages
-uv pip install <package>       # Install new package
+uv sync                        # Sync project dependencies
+uv add <package>               # Add runtime dependency
+uv add --dev <package>         # Add development dependency
+uv remove <package>            # Remove dependency
+```
+
+**Run All Validations:**
+```bash
+./validate                     # Run all checks (tests, lint, format, types)
 ```
 
 ## Architecture

@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+echo "🚀 Running all validation checks..."
+echo
+
+echo "🔍 Running tests..."
+uv run pytest
+
+echo
+echo "🔍 Checking code quality..."
+uv run ruff check .
+
+echo
+echo "🔍 Checking code formatting..."
+uv run ruff format --check .
+
+echo
+echo "🔍 Running type checking..."
+uv run mypy src/
+
+echo
+echo "🎉 All validation checks passed!"
