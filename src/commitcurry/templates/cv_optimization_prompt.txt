@@ -1,0 +1,9 @@
+Create a highly optimized resume copy from the given resume, tailored to the given job posting, ensuring relevance, clarity, and maximizing chances of passing through Applicant Tracking Systems (ATS) and human recruiters. Use the information from the original resume and stay truthful. Include into optimized resume important position's keywords. Prefer bullet points and short sentences.
+
+Original Resume:
+{cv_content}
+
+Job Posting:
+{job_description}
+
+Please provide the optimized resume below:

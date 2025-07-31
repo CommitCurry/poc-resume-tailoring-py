@@ -6,6 +6,8 @@ from typing import Optional
 
 import click
 
+from .cv_optimizer import create_cv_optimizer
+
 
 def read_file_content(file_path: Path) -> str:
     """Read content from a file with error handling."""
@@ -54,12 +56,33 @@ def main(cv_file: Path, job_file: Path) -> None:
     """
     # Read file contents
     cv_content = read_file_content(cv_file)
-    _job_content = read_file_content(job_file)  # Will be used later
+    job_content = read_file_content(job_file)
 
-    # For now, just print the CV content
-    click.echo("CV Content:")
-    click.echo("=" * 50)
-    click.echo(cv_content)
+    try:
+        # Initialize CV optimizer
+        click.echo("🤖 Initializing CV optimizer...")
+        optimizer = create_cv_optimizer()
+
+        # Optimize the CV
+        click.echo("✨ Optimizing CV for the job description...")
+        optimized_cv = optimizer.optimize_cv(cv_content, job_content)
+
+        # Print the optimized CV
+        click.echo("\n" + "=" * 60)
+        click.echo("🎯 OPTIMIZED CV")
+        click.echo("=" * 60)
+        click.echo(optimized_cv)
+
+    except ValueError as e:
+        click.echo(f"❌ Configuration Error: {e}", err=True)
+        click.echo("💡 Tip: Set your GEMINI_API_KEY environment variable", err=True)
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"❌ Optimization failed: {e}", err=True)
+        click.echo("\n📄 Falling back to original CV:", err=True)
+        click.echo("=" * 50)
+        click.echo(cv_content)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

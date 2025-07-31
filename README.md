@@ -1,6 +1,6 @@
 # CommitCurry
 
-A command line application for CommitCurry.
+AI-powered resume tailoring tool that optimizes CVs for specific job descriptions using Gemini.
 
 ## Prerequisites
 
@@ -20,12 +20,30 @@ brew install uv
 uv pip install -e ".[dev]"
 ```
 
+## Configuration
+
+**Gemini API Key**: The application requires a Gemini API key to optimize CVs. Set your API key as an environment variable:
+
+```bash
+export GEMINI_API_KEY="your-gemini-api-key-here"
+```
+
+Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+
 ## Usage
 
 ```bash
-# Run the application (no manual environment activation needed)
-uv run commitcurry
+# Run the application with CV and job description files
+uv run commitcurry path/to/cv.md path/to/job.md
+
+# Example with sample files
+uv run commitcurry samples/cv.md samples/job.md
 ```
+
+The application will:
+1. Read your CV and job description files
+2. Use Gemini AI to optimize your CV for the specific job
+3. Output the tailored resume to stdout
 
 ## Development
 
