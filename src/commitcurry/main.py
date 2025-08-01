@@ -6,6 +6,7 @@ from typing import Optional
 
 import click
 
+from .config.logging import setup_logging
 from .cv_optimizer import create_cv_optimizer
 
 
@@ -57,6 +58,9 @@ def main(cv_file: Path, job_file: Path, verbose: bool) -> None:
     CV_FILE: Path to the CV/resume file
     JOB_FILE: Path to the job description file
     """
+    # Configure logging early to capture all library logs
+    setup_logging()
+
     # Read file contents
     cv_content = read_file_content(cv_file)
     job_content = read_file_content(job_file)
