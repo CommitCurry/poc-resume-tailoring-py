@@ -86,14 +86,14 @@ class CVOptimizer:
                 # For newer Griptape versions
                 output_value = response.output_task.output
                 if hasattr(output_value, "value"):
-                    return output_value.value.strip()
+                    return str(output_value.value).strip()
                 else:
                     return str(output_value).strip()
             elif hasattr(response, "output"):
                 # Alternative structure
                 output_value = response.output
                 if hasattr(output_value, "value"):
-                    return output_value.value.strip()
+                    return str(output_value.value).strip()
                 else:
                     return str(output_value).strip()
             else:
