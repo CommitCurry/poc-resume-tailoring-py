@@ -42,20 +42,12 @@ class CVOptimizer:
         )
         try:
             return template_path.read_text(encoding="utf-8")
-        except FileNotFoundError:
-            # Fallback to hardcoded prompt if template file is missing
-            return (
-                "Create a highly optimized resume copy from the given resume, "
-                "tailored to the given job posting, ensuring relevance, clarity, "
-                "and maximizing chances of passing through Applicant Tracking "
-                "Systems (ATS) and human recruiters. Use the information from the "
-                "original resume and stay truthful. "
-                "Include into optimized resume important position's keywords. "
-                "Prefer bullet points and short sentences.\n\n"
-                "Original Resume:\n{cv_content}\n\n"
-                "Job Posting:\n{job_description}\n\n"
-                "Please provide the optimized resume below:"
-            )
+        except FileNotFoundError as e:
+            raise FileNotFoundError(
+                f"CV optimization prompt template is required but not found: "
+                f"{template_path}. This file should be included as part of the "
+                "application package."
+            ) from e
 
     def optimize_cv(self, cv_content: str, job_description: str) -> str:
         """Optimize a CV for a specific job description.

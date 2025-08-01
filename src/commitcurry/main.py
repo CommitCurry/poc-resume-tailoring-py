@@ -48,7 +48,10 @@ def validate_file_path(
 @click.command()
 @click.argument("cv_file", callback=validate_file_path, type=str)
 @click.argument("job_file", callback=validate_file_path, type=str)
-def main(cv_file: Path, job_file: Path) -> None:
+@click.option(
+    "-v", "--verbose", is_flag=True, help="Show progress messages and formatting"
+)
+def main(cv_file: Path, job_file: Path, verbose: bool) -> None:
     """CommitCurry - AI-powered resume tailoring tool.
 
     CV_FILE: Path to the CV/resume file
@@ -60,28 +63,27 @@ def main(cv_file: Path, job_file: Path) -> None:
 
     try:
         # Initialize CV optimizer
-        click.echo("🤖 Initializing CV optimizer...")
+        if verbose:
+            click.echo("🤖 Initializing CV optimizer...")
         optimizer = create_cv_optimizer()
 
         # Optimize the CV
-        click.echo("✨ Optimizing CV for the job description...")
+        if verbose:
+            click.echo("✨ Optimizing CV for the job description...")
         optimized_cv = optimizer.optimize_cv(cv_content, job_content)
 
         # Print the optimized CV
-        click.echo("\n" + "=" * 60)
-        click.echo("🎯 OPTIMIZED CV")
-        click.echo("=" * 60)
+        if verbose:
+            click.echo("\n" + "=" * 60)
+            click.echo("🎯 OPTIMIZED CV")
+            click.echo("=" * 60)
         click.echo(optimized_cv)
 
     except ValueError as e:
         click.echo(f"❌ Configuration Error: {e}", err=True)
-        click.echo("💡 Tip: Set your GEMINI_API_KEY environment variable", err=True)
         sys.exit(1)
     except Exception as e:
         click.echo(f"❌ Optimization failed: {e}", err=True)
-        click.echo("\n📄 Falling back to original CV:", err=True)
-        click.echo("=" * 50)
-        click.echo(cv_content)
         sys.exit(1)
 
 

@@ -33,17 +33,25 @@ Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 ## Usage
 
 ```bash
-# Run the application with CV and job description files
+# Run the application with CV and job description files (quiet mode - only outputs optimized CV)
 uv run commitcurry path/to/cv.md path/to/job.md
+
+# Run with verbose output (shows progress messages)
+uv run commitcurry -v path/to/cv.md path/to/job.md
 
 # Example with sample files
 uv run commitcurry samples/cv.md samples/job.md
+uv run commitcurry --verbose samples/cv.md samples/job.md
 ```
 
 The application will:
 1. Read your CV and job description files
 2. Use Gemini AI to optimize your CV for the specific job
 3. Output the tailored resume to stdout
+
+**Output modes:**
+- **Quiet mode** (default): Only outputs the optimized CV content
+- **Verbose mode** (`-v` or `--verbose`): Shows progress messages and formatting
 
 ## Development
 
