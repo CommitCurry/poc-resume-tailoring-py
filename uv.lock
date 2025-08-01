@@ -182,7 +182,7 @@ dependencies = [
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "google-generativeai" },
-    { name = "griptape" },
+    { name = "griptape", extra = ["drivers-prompt-ollama"] },
 ]
 
 [package.optional-dependencies]
@@ -197,7 +197,7 @@ dev = [
 requires-dist = [
     { name = "click", specifier = ">=8.0.0" },
     { name = "google-generativeai", specifier = ">=0.8.5" },
-    { name = "griptape", specifier = ">=1.8.0" },
+    { name = "griptape", extras = ["drivers-prompt-ollama"], specifier = ">=1.8.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
@@ -473,6 +473,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ba/8f/1535c74fa15123f914a57c1db24dc40a2b88391ba50a6d4d5ab37d8298cf/griptape-1.8.0.tar.gz", hash = "sha256:fb8b476e8db3474450d6b641fa3e89a9607c30ea851fe95c1aa97f5e6686f790", size = 188886, upload-time = "2025-07-25T20:57:00.32Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/4c/468febdb3c733f6d0ebcedbfa887e2ff7a42288a3d47b911f983cebf1b0d/griptape-1.8.0-py3-none-any.whl", hash = "sha256:f7aa7feb345a508e72d7d75065c0a57f645fde8e9670a67fdbddd7160bf762e5", size = 424029, upload-time = "2025-07-25T20:56:58.894Z" },
+]
+
+[package.optional-dependencies]
+drivers-prompt-ollama = [
+    { name = "ollama" },
 ]
 
 [[package]]
@@ -1080,6 +1085,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9b/c9/142c1e03f199d202da8e980c2496213509291b6024fd2735ad28ae7065c7/numpy-2.3.2-pp311-pypy311_pp73-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:8446acd11fe3dc1830568c941d44449fd5cb83068e5c70bd5a470d323d448296", size = 14419651, upload-time = "2025-07-24T20:58:59.048Z" },
     { url = "https://files.pythonhosted.org/packages/8b/95/8023e87cbea31a750a6c00ff9427d65ebc5fef104a136bfa69f76266d614/numpy-2.3.2-pp311-pypy311_pp73-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:aa098a5ab53fa407fded5870865c6275a5cd4101cfdef8d6fafc48286a96e981", size = 16760166, upload-time = "2025-07-24T21:28:56.38Z" },
     { url = "https://files.pythonhosted.org/packages/78/e3/6690b3f85a05506733c7e90b577e4762517404ea78bab2ca3a5cb1aeb78d/numpy-2.3.2-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:6936aff90dda378c09bea075af0d9c675fe3a977a9d2402f95a87f440f59f619", size = 12977811, upload-time = "2025-07-24T21:29:18.234Z" },
+]
+
+[[package]]
+name = "ollama"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8d/96/c7fe0d2d1b3053be614822a7b722c7465161b3672ce90df71515137580a0/ollama-0.5.1.tar.gz", hash = "sha256:5a799e4dc4e7af638b11e3ae588ab17623ee019e496caaf4323efbaa8feeff93", size = 41112, upload-time = "2025-05-30T21:32:48.679Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d6/76/3f96c8cdbf3955d7a73ee94ce3e0db0755d6de1e0098a70275940d1aff2f/ollama-0.5.1-py3-none-any.whl", hash = "sha256:4c8839f35bc173c7057b1eb2cbe7f498c1a7e134eafc9192824c8aecb3617506", size = 13369, upload-time = "2025-05-30T21:32:47.429Z" },
 ]
 
 [[package]]

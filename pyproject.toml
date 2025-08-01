@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "click>=8.0.0",
     "google-generativeai>=0.8.5",
-    "griptape>=1.8.0",
+    "griptape[drivers-prompt-ollama]>=1.8.0",
 ]
 
 [project.optional-dependencies]

@@ -8,6 +8,7 @@ import click
 
 from .config.logging import setup_logging
 from .cv_optimizer import create_cv_optimizer
+from .models.factory import ModelFactory
 
 
 def read_file_content(file_path: Path) -> str:
@@ -50,9 +51,14 @@ def validate_file_path(
 @click.argument("cv_file", callback=validate_file_path, type=str)
 @click.argument("job_file", callback=validate_file_path, type=str)
 @click.option(
+    "-m", "--model",
+    default="gemini-2.5-flash",
+    help="AI model to use (e.g., 'gemini-2.5-flash', 'ollama:qwen3:8b')"
+)
+@click.option(
     "-v", "--verbose", is_flag=True, help="Show progress messages and formatting"
 )
-def main(cv_file: Path, job_file: Path, verbose: bool) -> None:
+def main(cv_file: Path, job_file: Path, model: str, verbose: bool) -> None:
     """CommitCurry - AI-powered resume tailoring tool.
 
     CV_FILE: Path to the CV/resume file
@@ -66,10 +72,13 @@ def main(cv_file: Path, job_file: Path, verbose: bool) -> None:
     job_content = read_file_content(job_file)
 
     try:
-        # Initialize CV optimizer
+        # Create AI model instance
         if verbose:
-            click.echo("🤖 Initializing CV optimizer...")
-        optimizer = create_cv_optimizer()
+            click.echo(f"🤖 Initializing {model} model...")
+        ai_model = ModelFactory.create_model(model)
+
+        # Initialize CV optimizer with the model
+        optimizer = create_cv_optimizer(ai_model)
 
         # Optimize the CV
         if verbose:
@@ -85,6 +94,9 @@ def main(cv_file: Path, job_file: Path, verbose: bool) -> None:
 
     except ValueError as e:
         click.echo(f"❌ Configuration Error: {e}", err=True)
+        sys.exit(1)
+    except ConnectionError as e:
+        click.echo(f"❌ Connection Error: {e}", err=True)
         sys.exit(1)
     except Exception as e:
         click.echo(f"❌ Optimization failed: {e}", err=True)

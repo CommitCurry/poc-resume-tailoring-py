@@ -1,6 +1,6 @@
 # CommitCurry
 
-AI-powered resume tailoring tool that optimizes CVs for specific job descriptions using Gemini.
+AI-powered resume tailoring tool that optimizes CVs for specific job descriptions using either cloud-based Gemini or local models via Ollama.
 
 ## Prerequisites
 
@@ -22,7 +22,9 @@ uv pip install -e ".[dev]"
 
 ## Configuration
 
-**Gemini API Key**: The application requires a Gemini API key to optimize CVs. Set your API key as an environment variable:
+### Option 1: Gemini (Cloud)
+
+**Gemini API Key**: Set your API key as an environment variable:
 
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key-here"
@@ -30,23 +32,82 @@ export GEMINI_API_KEY="your-gemini-api-key-here"
 
 Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
+### Option 2: Local Models with Ollama
+
+**Install Ollama** (one-time setup):
+
+```bash
+# macOS
+brew install ollama
+
+# Linux
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Windows: Download from https://ollama.ai/download
+```
+
+**Download recommended models** (one-time per model):
+
+```bash
+# Choose one or all of these models for local experimentation
+ollama pull qwen2.5:7b     # ~4.1GB - Excellent text quality, reasoning
+ollama pull llama3.1:8b    # ~4.7GB - Balanced performance and efficiency  
+ollama pull mistral:7b     # ~4.1GB - Professional writing, structured output
+```
+
+**Start Ollama server**:
+
+```bash
+ollama serve  # Keep running in background, starts on http://localhost:11434
+```
+
+**Verify setup**:
+
+```bash
+ollama list           # Show downloaded models
+ollama run qwen2.5:7b # Test a model (type /bye to exit)
+```
+
+**Storage requirements**: ~12-15GB total for all three models.
+
 ## Usage
 
 ```bash
-# Run the application with CV and job description files (quiet mode - only outputs optimized CV)
-uv run commitcurry path/to/cv.md path/to/job.md
+# Basic usage (uses Gemini by default)
+uv run commitcurry cv.md job.md
 
-# Run with verbose output (shows progress messages)
-uv run commitcurry -v path/to/cv.md path/to/job.md
+# Specify model with -m flag
+uv run commitcurry -m gemini-2.5-flash cv.md job.md
+uv run commitcurry -m ollama:qwen2.5:7b cv.md job.md
+
+# Verbose output (shows progress messages)
+uv run commitcurry -v -m ollama:qwen2.5:7b cv.md job.md
 
 # Example with sample files
 uv run commitcurry samples/cv.md samples/job.md
-uv run commitcurry --verbose samples/cv.md samples/job.md
+uv run commitcurry -m ollama:qwen2.5:7b samples/cv.md samples/job.md
 ```
+
+### Model Selection
+
+Use the `-m` or `--model` flag to choose your AI model:
+
+**Cloud Models (require API key):**
+- `gemini-2.5-flash` (default) - Latest Gemini model
+- `gemini-2.0-flash` - Previous Gemini version
+- `gemini-1.5-flash` - Older Gemini version
+
+**Local Models (require Ollama):**
+- `ollama:qwen2.5:7b` - Excellent for multilingual resume writing
+- `ollama:deepseek-r1:7b` - Advanced reasoning for complex optimization
+- `ollama:llama3.3:8b` - Balanced performance and quality
+- `ollama:mistral:7b` - Professional writing specialist
+- `ollama:phi4:14b` - Compact reasoning model
+- `ollama:gemma2:9b` - Efficient Google model
 
 The application will:
 1. Read your CV and job description files
-2. Use Gemini AI to optimize your CV for the specific job
+2. Use AI (Gemini or local Ollama models) to optimize your CV for the specific job
 3. Output the tailored resume to stdout
 
 **Output modes:**

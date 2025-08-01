@@ -1,85 +1,105 @@
 """Tests for the CV optimizer module."""
 
-import os
-from unittest.mock import Mock, patch
 
 import pytest
 
 from commitcurry.cv_optimizer import CVOptimizer, create_cv_optimizer
+from commitcurry.models.base import AIModel
 
 
-def test_cv_optimizer_init_with_api_key():
-    """Test CVOptimizer initialization with API key."""
-    optimizer = CVOptimizer(api_key="test-api-key")
-    assert optimizer.api_key == "test-api-key"
+class MockAIModel(AIModel):
+    """Mock AI model for testing."""
+
+    def __init__(self, model_name: str = "mock-model"):
+        self._model_name = model_name
+        self.generate_response = "Mocked optimized CV response"
+        self.generate_calls = []
+
+    def generate(self, prompt: str) -> str:
+        self.generate_calls.append(prompt)
+        return self.generate_response
+
+    @property
+    def model_name(self) -> str:
+        return self._model_name
 
 
-def test_cv_optimizer_init_from_env():
-    """Test CVOptimizer initialization from environment variable."""
-    with patch.dict(os.environ, {"GEMINI_API_KEY": "env-api-key"}):
-        optimizer = CVOptimizer()
-        assert optimizer.api_key == "env-api-key"
-
-
-def test_cv_optimizer_init_no_api_key():
-    """Test CVOptimizer initialization fails without API key."""
-    with patch.dict(os.environ, {}, clear=True):
-        with pytest.raises(ValueError, match="Gemini API key is required"):
-            CVOptimizer()
+def test_cv_optimizer_init():
+    """Test CVOptimizer initialization with a model."""
+    mock_model = MockAIModel("test-model")
+    optimizer = CVOptimizer(model=mock_model)
+    assert optimizer.model == mock_model
+    assert optimizer.model.model_name == "test-model"
 
 
 def test_cv_optimizer_prompt_template_loading():
     """Test that the prompt template is loaded correctly."""
-    optimizer = CVOptimizer(api_key="test-key")
+    mock_model = MockAIModel()
+    optimizer = CVOptimizer(model=mock_model)
     assert optimizer.prompt_template is not None
     assert "optimize" in optimizer.prompt_template.lower()
     assert "{cv_content}" in optimizer.prompt_template
     assert "{job_description}" in optimizer.prompt_template
 
 
-@patch("commitcurry.cv_optimizer.Agent")
-@patch("commitcurry.cv_optimizer.GooglePromptDriver")
-def test_optimize_cv_success(mock_google_driver, mock_agent_class):
+def test_optimize_cv_success():
     """Test successful CV optimization."""
-    # Mock the agent and its response
-    mock_agent = Mock()
-    mock_agent_class.return_value = mock_agent
+    mock_model = MockAIModel("test-model")
+    mock_model.generate_response = "Optimized CV content here"
 
-    # Mock response with nested structure
-    mock_response = Mock()
-    mock_output_task = Mock()
-    mock_output = Mock()
-    mock_output.value = "Optimized CV content here"
-    mock_output_task.output = mock_output
-    mock_response.output_task = mock_output_task
-    mock_agent.run.return_value = mock_response
-
-    optimizer = CVOptimizer(api_key="test-key")
-
+    optimizer = CVOptimizer(model=mock_model)
     result = optimizer.optimize_cv("Original CV", "Job Description")
 
     assert result == "Optimized CV content here"
-    mock_agent.run.assert_called_once()
+    assert len(mock_model.generate_calls) == 1
+
+    # Check that the prompt was formatted correctly
+    generated_prompt = mock_model.generate_calls[0]
+    assert "Original CV" in generated_prompt
+    assert "Job Description" in generated_prompt
 
 
-@patch("commitcurry.cv_optimizer.Agent")
-@patch("commitcurry.cv_optimizer.GooglePromptDriver")
-def test_optimize_cv_failure(mock_google_driver, mock_agent_class):
+def test_optimize_cv_failure():
     """Test CV optimization failure handling."""
-    # Mock the agent to raise an exception
-    mock_agent = Mock()
-    mock_agent_class.return_value = mock_agent
-    mock_agent.run.side_effect = Exception("API Error")
+    mock_model = MockAIModel("error-model")
 
-    optimizer = CVOptimizer(api_key="test-key")
+    # Make the mock model raise an exception
+    def failing_generate(prompt: str) -> str:
+        raise Exception("Model API Error")
 
-    with pytest.raises(Exception, match="Failed to optimize CV: API Error"):
+    mock_model.generate = failing_generate
+
+    optimizer = CVOptimizer(model=mock_model)
+
+    with pytest.raises(
+        Exception, match="Failed to optimize CV with error-model: Model API Error"
+    ):
         optimizer.optimize_cv("Original CV", "Job Description")
 
 
 def test_create_cv_optimizer_factory():
     """Test the factory function."""
-    with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}):
-        optimizer = create_cv_optimizer()
-        assert isinstance(optimizer, CVOptimizer)
-        assert optimizer.api_key == "test-key"
+    mock_model = MockAIModel("factory-test")
+    optimizer = create_cv_optimizer(mock_model)
+
+    assert isinstance(optimizer, CVOptimizer)
+    assert optimizer.model == mock_model
+    assert optimizer.model.model_name == "factory-test"
+
+
+def test_cv_optimizer_strips_content():
+    """Test that CV optimizer strips whitespace from input content."""
+    mock_model = MockAIModel()
+    optimizer = CVOptimizer(model=mock_model)
+
+    # Test with content that has leading/trailing whitespace
+    optimizer.optimize_cv("  Original CV  ", "  Job Description  ")
+
+    # Check that the prompt received stripped content
+    generated_prompt = mock_model.generate_calls[0]
+    # The template should contain the stripped content
+    assert "Original CV" in generated_prompt
+    assert "Job Description" in generated_prompt
+    # Should not contain the extra spaces
+    assert "  Original CV  " not in generated_prompt
+    assert "  Job Description  " not in generated_prompt

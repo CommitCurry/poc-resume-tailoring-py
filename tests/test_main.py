@@ -32,12 +32,14 @@ def test_main_command_with_valid_files_no_api_key(tmp_path: Path) -> None:
     assert "💡 Tip:" not in result.output
 
 
+@patch("commitcurry.main.ModelFactory.create_model")
 @patch("commitcurry.main.create_cv_optimizer")
 def test_main_command_with_valid_files_and_api_key(
-    mock_create_optimizer, tmp_path: Path
+    mock_create_optimizer, mock_create_model, tmp_path: Path
 ) -> None:
     """Test that the main command works with valid files and API key (quiet mode)."""
-    # Mock the optimizer
+    # Mock the model and optimizer
+    mock_model = mock_create_model.return_value
     mock_optimizer = mock_create_optimizer.return_value
     mock_optimizer.optimize_cv.return_value = "Optimized CV content"
 
@@ -63,12 +65,18 @@ def test_main_command_with_valid_files_and_api_key(
     assert "✨ Optimizing" not in result.output
     assert "🎯 OPTIMIZED CV" not in result.output
     mock_optimizer.optimize_cv.assert_called_once_with(cv_content, job_content)
+    mock_create_model.assert_called_once_with("gemini-2.5-flash")
+    mock_create_optimizer.assert_called_once_with(mock_model)
 
 
+@patch("commitcurry.main.ModelFactory.create_model")
 @patch("commitcurry.main.create_cv_optimizer")
-def test_main_command_verbose_mode(mock_create_optimizer, tmp_path: Path) -> None:
+def test_main_command_verbose_mode(
+    mock_create_optimizer, mock_create_model, tmp_path: Path
+) -> None:
     """Test that the main command shows progress messages in verbose mode."""
-    # Mock the optimizer
+    # Mock the model and optimizer
+    mock_model = mock_create_model.return_value
     mock_optimizer = mock_create_optimizer.return_value
     mock_optimizer.optimize_cv.return_value = "Optimized CV content"
 
@@ -88,11 +96,13 @@ def test_main_command_verbose_mode(mock_create_optimizer, tmp_path: Path) -> Non
 
     assert result.exit_code == 0
     # In verbose mode, should show progress messages
-    assert "🤖 Initializing CV optimizer..." in result.output
+    assert "🤖 Initializing gemini-2.5-flash model..." in result.output
     assert "✨ Optimizing CV for the job description..." in result.output
     assert "🎯 OPTIMIZED CV" in result.output
     assert "Optimized CV content" in result.output
     mock_optimizer.optimize_cv.assert_called_once_with(cv_content, job_content)
+    mock_create_model.assert_called_once_with("gemini-2.5-flash")
+    mock_create_optimizer.assert_called_once_with(mock_model)
 
 
 def test_main_command_verbose_mode_no_api_key(tmp_path: Path) -> None:
