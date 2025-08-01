@@ -26,7 +26,7 @@ class CVOptimizer:
 
         # Configure Griptape with Gemini
         self.prompt_driver = GooglePromptDriver(
-            model="gemini-1.5-flash", api_key=self.api_key
+            model="gemini-2.5-flash", api_key=self.api_key
         )
 
         # Create agent with the configured driver
