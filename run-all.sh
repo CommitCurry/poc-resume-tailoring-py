@@ -36,17 +36,50 @@ if [ ! -x "./run.sh" ]; then
     exit 1
 fi
 
-# Check if ollama command is available
-if ! command -v ollama &> /dev/null; then
-    echo "Error: 'ollama' command not found"
-    echo "Make sure Ollama is installed and in your PATH"
-    exit 1
+# Function to get models via API
+get_models_via_api() {
+    local api_url="$1"
+    echo "🔍 Getting list of available Ollama models via API ($api_url)..." >&2
+    
+    # Use curl to get models from API
+    local models_json
+    if ! models_json=$(curl -s "$api_url/api/tags" 2>/dev/null); then
+        echo "❌ Failed to connect to Ollama API at $api_url" >&2
+        echo "💡 Make sure Ollama server is running at $api_url" >&2
+        exit 1
+    fi
+    
+    # Parse JSON to extract model names
+    if command -v jq &> /dev/null; then
+        # Use jq if available for better JSON parsing
+        echo "$models_json" | jq -r '.models[]?.name // empty' | grep -v '^$'
+    else
+        # Fallback: simple parsing without jq
+        echo "$models_json" | grep -o '"name":"[^"]*"' | cut -d'"' -f4 | grep -v '^$'
+    fi
+}
+
+# Function to get models via CLI
+get_models_via_cli() {
+    echo "🔍 Getting list of available Ollama models via CLI..." >&2
+    
+    # Check if ollama command is available
+    if ! command -v ollama &> /dev/null; then
+        echo "❌ Error: 'ollama' command not found" >&2
+        echo "💡 Make sure Ollama is installed and in your PATH" >&2
+        exit 1
+    fi
+    
+    # Get list of models from ollama, skip the header line, extract model names
+    ollama list | tail -n +2 | awk '{print $1}' | grep -v '^$'
+}
+
+# Get models using API if OLLAMA_URL is set, otherwise use CLI
+if [ -n "$OLLAMA_URL" ]; then
+    MODELS=$(get_models_via_api "$OLLAMA_URL")
+else
+    MODELS=$(get_models_via_cli)
 fi
-
-echo "🔍 Getting list of available Ollama models..."
-
-# Get list of models from ollama, skip the header line, extract model names
-MODELS=$(ollama list | tail -n +2 | awk '{print $1}' | grep -v '^$')
 
 if [ -z "$MODELS" ]; then
     echo "❌ No Ollama models found"

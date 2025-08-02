@@ -1,5 +1,8 @@
 """Ollama model implementation using Griptape."""
 
+import os
+from typing import Optional
+
 from griptape.drivers.prompt.ollama import OllamaPromptDriver  # type: ignore
 from griptape.structures import Agent  # type: ignore
 
@@ -9,15 +12,16 @@ from .base import AIModel
 class OllamaModel(AIModel):
     """Ollama model implementation using Griptape and Ollama."""
 
-    def __init__(self, model_name: str, base_url: str = "http://localhost:11434"):
+    def __init__(self, model_name: str, base_url: Optional[str] = None):
         """Initialize the Ollama model.
 
         Args:
             model_name: The Ollama model name (e.g., 'qwen3:8b')
-            base_url: The base URL for Ollama API
+            base_url: The base URL for Ollama API. If None, will be read from
+                OLLAMA_URL env var.
         """
         self._model_name = model_name
-        self.base_url = base_url.rstrip("/")
+        self.base_url = (base_url or os.getenv("OLLAMA_URL") or "http://localhost:11434").rstrip("/")
 
         try:
             # Configure Griptape with Ollama

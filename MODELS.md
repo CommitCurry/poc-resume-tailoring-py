@@ -102,22 +102,22 @@ This document provides a comprehensive comparison of locally available LLM model
 
 ## Recommended Models for Resume Writing
 
-### 🥇 Top Choice: **Qwen2.5:7b**
+### 🥇 Top Choice: **ollama:qwen2.5:7b**
 - **Why**: Best balance of quality, speed, and features
 - **Pros**: Excellent text generation, multilingual, reasonable resource usage
 - **Use When**: Default choice for most resume writing tasks
 
-### 🥈 Professional Choice: **Mistral:7b**
+### 🥈 Professional Choice: **ollama:mistral:7b**
 - **Why**: Specialized for professional, structured writing
 - **Pros**: Exceptional professional tone, structured output
 - **Use When**: High-stakes professional documents, formal resumes
 
-### 🥉 Reasoning Choice: **DeepSeek-R1:7b**
+### 🥉 Reasoning Choice: **ollama:deepseek-r1:7b**
 - **Why**: Advanced reasoning for complex resume optimization
 - **Pros**: Step-by-step thinking, complex problem solving
 - **Use When**: Need detailed analysis and optimization reasoning
 
-### 🏆 Efficiency Choice: **Gemma2:9b**
+### 🏆 Efficiency Choice: **ollama:gemma2:9b**
 - **Why**: Google's efficient architecture with good performance
 - **Pros**: Fast inference, good quality, moderate resource usage
 - **Use When**: Quick iterations, limited hardware resources
@@ -149,14 +149,14 @@ ollama run qwen2.5:7b
 
 ## Model Selection Guide
 
-**Choose based on your priorities:**
+**Choose based on your priorities (use with `uv run commitcurry -m <model>`):**
 
-- **Quality First**: Qwen2.5:14b or DeepSeek-R1:32b
-- **Speed First**: Gemma2:2b or Qwen2.5:0.5b  
-- **Balance**: Qwen2.5:7b or Llama3.3:8b
-- **Professional Writing**: Mistral:7b or Mistral:nemo
-- **Reasoning Tasks**: DeepSeek-R1:7b or Phi4:14b
-- **Limited Hardware**: Gemma2:2b or Qwen2.5:0.5b
+- **Quality First**: `ollama:qwen2.5:14b` or `ollama:deepseek-r1:32b`
+- **Speed First**: `ollama:gemma2:2b` or `ollama:qwen2.5:0.5b`  
+- **Balance**: `ollama:qwen2.5:7b` or `ollama:llama3.3:8b`
+- **Professional Writing**: `ollama:mistral:7b` or `ollama:mistral:nemo`
+- **Reasoning Tasks**: `ollama:deepseek-r1:7b` or `ollama:phi4:14b`
+- **Limited Hardware**: `ollama:gemma2:2b` or `ollama:qwen2.5:0.5b`
 
 ## Future Considerations
 

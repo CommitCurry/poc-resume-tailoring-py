@@ -38,8 +38,10 @@ class ModelFactory:
                     f"Invalid Ollama model format: '{model_name}'. "
                     "Expected format: 'ollama:model_name' (e.g., 'ollama:qwen3:8b')"
                 )
-            
-            base_url = kwargs.get("base_url", "http://localhost:11434")
+
+            # Pass base_url if explicitly provided, otherwise let OllamaModel handle
+            # OLLAMA_URL environment variable
+            base_url = kwargs.get("base_url")
             return OllamaModel(model_name=actual_model_name, base_url=base_url)
 
         else:
@@ -62,7 +64,7 @@ class ModelFactory:
                 "format": "gemini-*",
                 "examples": [
                     "gemini-2.5-flash",
-                    "gemini-2.0-flash", 
+                    "gemini-2.0-flash",
                     "gemini-1.5-flash",
                     "gemini-1.5-pro"
                 ],
