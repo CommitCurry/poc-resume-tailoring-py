@@ -1,9 +1,17 @@
-Create a highly optimized resume copy from the given resume, tailored to the given job posting, ensuring relevance, clarity, and maximizing chances of passing through Applicant Tracking Systems (ATS) and human recruiters. Use the information from the original resume and stay truthful. Include into optimized resume important position's keywords. Prefer bullet points and short sentences.
+Create a highly optimized resume copy from the given resume, tailored to the given job posting, ensuring relevance, clarity,
+and maximizing chances of passing through Applicant Tracking Systems (ATS) and human recruiters.
+It should be also easy and quick to read by human recruiters on LinkedIn.
 
+Refine each section of the resume, especially Professional experience and convert each job description to a bullet point list.
+Use quantifiable impact if possible, use metrics that align with the role's success criteria. Begin with strong action verbs.
+
+Use the information from the original resume and stay truthful. Include into optimized resume important position's keywords.
+Prefer bullet points and short sentences. Leave out information which is not supportive or does not bring much value.
+
+---
 Original Resume:
 {cv_content}
 
+---
 Job Posting:
 {job_description}
-
-Please provide the optimized resume below:
