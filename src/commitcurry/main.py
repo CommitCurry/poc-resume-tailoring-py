@@ -8,7 +8,7 @@ import click
 
 from .config.logging import setup_logging
 from .cv_optimizer import create_cv_optimizer
-from .models.factory import ModelFactory
+from .providers.factory import AgentFactory
 
 
 def read_file_content(file_path: Path) -> str:
@@ -72,13 +72,13 @@ def main(cv_file: Path, job_file: Path, model: str, verbose: bool) -> None:
     job_content = read_file_content(job_file)
 
     try:
-        # Create AI model instance
+        # Create AI agent instance
         if verbose:
-            click.echo(f"🤖 Initializing {model} model...")
-        ai_model = ModelFactory.create_model(model)
+            click.echo(f"🤖 Initializing {model} agent...")
+        agent = AgentFactory.create_agent(model)
 
-        # Initialize CV optimizer with the model
-        optimizer = create_cv_optimizer(ai_model)
+        # Initialize CV optimizer with the agent
+        optimizer = create_cv_optimizer(agent)
 
         # Optimize the CV
         if verbose:

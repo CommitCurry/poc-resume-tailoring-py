@@ -1,20 +1,20 @@
-"""CV optimization module using various AI models."""
+"""CV optimization module using various AI agents."""
 
 from pathlib import Path
 
-from .models.base import AIModel
+from griptape.structures import Agent  # type: ignore
 
 
 class CVOptimizer:
-    """CV optimization service using configurable AI models."""
+    """CV optimization service using configurable AI agents."""
 
-    def __init__(self, model: AIModel):
+    def __init__(self, agent: Agent):
         """Initialize the CV optimizer.
 
         Args:
-            model: AI model instance to use for optimization
+            agent: AI agent instance to use for optimization
         """
-        self.model = model
+        self.agent = agent
         # Load prompt template
         self.prompt_template = self._load_prompt_template()
 
@@ -51,22 +51,43 @@ class CVOptimizer:
                 cv_content=cv_content.strip(), job_description=job_description.strip()
             )
 
-            # Use the configured model to generate optimized CV
-            return self.model.generate(prompt)
+            # Use the configured agent to generate optimized CV
+            response = self.agent.run(prompt)
+
+            # Extract the output text from Griptape Agent response
+            if hasattr(response, "output_task") and hasattr(
+                response.output_task, "output"
+            ):
+                # For newer Griptape versions
+                output_value = response.output_task.output
+                if hasattr(output_value, "value"):
+                    return str(output_value.value).strip()
+                else:
+                    return str(output_value).strip()
+            elif hasattr(response, "output"):
+                # Alternative structure
+                output_value = response.output
+                if hasattr(output_value, "value"):
+                    return str(output_value.value).strip()
+                else:
+                    return str(output_value).strip()
+            else:
+                # Fallback - convert response to string
+                return str(response).strip()
 
         except Exception as e:
             raise Exception(
-                f"Failed to optimize CV with {self.model.model_name}: {str(e)}"
+                f"Failed to optimize CV with agent: {str(e)}"
             ) from e
 
 
-def create_cv_optimizer(model: AIModel) -> CVOptimizer:
+def create_cv_optimizer(agent: Agent) -> CVOptimizer:
     """Factory function to create a CV optimizer instance.
     
     Args:
-        model: AI model instance to use for optimization
+        agent: AI agent instance to use for optimization
         
     Returns:
-        CVOptimizer instance configured with the given model
+        CVOptimizer instance configured with the given agent
     """
-    return CVOptimizer(model=model)
+    return CVOptimizer(agent=agent)
